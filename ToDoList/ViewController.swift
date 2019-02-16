@@ -31,6 +31,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
             success(true)
             c.insert(a[indexPath.row], at: 0)
             a.remove(at: indexPath.row)
+            UserDefaults.standard.set(c, forKey: "CompletedList")
             UserDefaults.standard.set(a, forKey:"ToDoArray")
 //            print(c.count)
             tableView.reloadData()
@@ -59,6 +60,9 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         if !isRunOnce{
             if UserDefaults.standard.value(forKey: "ToDoArray") != nil{
                 a = UserDefaults.standard.value(forKey: "ToDoArray") as! [String]
+            }
+            if UserDefaults.standard.value(forKey: "CompletedList") != nil{
+                c = UserDefaults.standard.value(forKey: "CompletedList") as![String]
             }
             isRunOnce = true
         }
