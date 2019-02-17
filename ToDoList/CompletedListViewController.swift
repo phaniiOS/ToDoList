@@ -9,7 +9,7 @@
 import UIKit
 
 class CompletedListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-    var completedList: [String] = c
+    var completedList: [String] = completed
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return completedList.count

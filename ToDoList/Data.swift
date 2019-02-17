@@ -8,4 +8,4 @@
 
 import Foundation
 
-var c: [String] = []
+var completed: [String] = []

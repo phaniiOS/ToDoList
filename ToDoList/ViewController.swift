@@ -8,7 +8,7 @@
 
 import UIKit
 
-var a: [String] = []
+var tasks: [String] = []
 
 var isRunOnce: Bool = false
 
@@ -16,12 +16,12 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
     var text: String = ""
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return a.count
+        return tasks.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CellToDo", for: indexPath) as UITableViewCell
-            cell.textLabel?.text = a[indexPath.row]
+            cell.textLabel?.text = tasks[indexPath.row]
         return cell
     }
     
@@ -29,10 +29,10 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         let completeAction = UIContextualAction(style: .normal, title:  "Mark as Complete", handler: { (ac:UIContextualAction, view:UIView, success:(Bool) -> Void) in
 //            print("OK, marked as Closed")
             success(true)
-            c.insert(a[indexPath.row], at: 0)
-            a.remove(at: indexPath.row)
-            UserDefaults.standard.set(c, forKey: "CompletedList")
-            UserDefaults.standard.set(a, forKey:"ToDoArray")
+            completed.insert(tasks[indexPath.row], at: 0)
+            tasks.remove(at: indexPath.row)
+            UserDefaults.standard.set(completed, forKey: "CompletedList")
+            UserDefaults.standard.set(tasks, forKey:"ToDoArray")
 //            print(c.count)
             tableView.reloadData()
         })
@@ -45,8 +45,8 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         let deleteAction = UIContextualAction(style: .normal, title:  "Delete Task", handler: { (ac:UIContextualAction, view:UIView, success:(Bool) -> Void) in
 //            print("Update action ...")
             success(true)
-            a.remove(at: indexPath.row)
-            UserDefaults.standard.set(a, forKey:"ToDoArray")
+            tasks.remove(at: indexPath.row)
+            UserDefaults.standard.set(tasks, forKey:"ToDoArray")
             tableView.reloadData()
         })
 //        deleteAction.image = UIImage(named: "hammer")
@@ -59,16 +59,16 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         // Do any additional setup after loading the view, typically from a nib.
         if !isRunOnce{
             if UserDefaults.standard.value(forKey: "ToDoArray") != nil{
-                a = UserDefaults.standard.value(forKey: "ToDoArray") as! [String]
+                tasks = UserDefaults.standard.value(forKey: "ToDoArray") as! [String]
             }
             if UserDefaults.standard.value(forKey: "CompletedList") != nil{
-                c = UserDefaults.standard.value(forKey: "CompletedList") as![String]
+                completed = UserDefaults.standard.value(forKey: "CompletedList") as![String]
             }
             isRunOnce = true
         }
         if text != ""{
-            a.insert(text, at: 0)
-            UserDefaults.standard.set(a, forKey:"ToDoArray")
+            tasks.insert(text, at: 0)
+            UserDefaults.standard.set(tasks, forKey:"ToDoArray")
         }
     }
 
