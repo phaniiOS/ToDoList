@@ -9,3 +9,4 @@
 import Foundation
 
 var completed: [String] = []
+var isCompletedChange: Bool = false

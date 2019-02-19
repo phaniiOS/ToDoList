@@ -9,18 +9,30 @@
 import UIKit
 
 class CompletedListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-    var completedList: [String] = completed
+//    var completedList: [String] = completed
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return completedList.count
+        return completed.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell = tableView.dequeueReusableCell(withIdentifier: "CellCompleted", for: indexPath) as UITableViewCell
-        cell.textLabel?.text = completedList[indexPath.row]
+        cell.textLabel?.text = completed[indexPath.row]
         return cell
     }
     
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction(style: .normal, title:  "Delete Task", handler: { (ac:UIContextualAction, view:UIView, success:(Bool) -> Void) in
+            //            print("Update action ...")
+            success(true)
+            isCompletedChange = true
+            completed.remove(at: indexPath.row)
+            tableView.reloadData()
+        })
+        //        deleteAction.image = UIImage(named: "hammer")
+        deleteAction.backgroundColor = .red
+        return UISwipeActionsConfiguration(actions: [deleteAction])
+    }
 //    var completedTask: String = ""
     
     override func viewDidLoad() {

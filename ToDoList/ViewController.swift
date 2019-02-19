@@ -7,18 +7,19 @@
 //
 
 import UIKit
+import Firebase
+import FirebaseDatabase
 
 var tasks: [String] = []
-
 var isRunOnce: Bool = false
 
 class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate {
     var text: String = ""
-    
+    var ref: DatabaseReference!
+    @IBOutlet weak var taskTableViewOutlet: UITableView!
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return tasks.count
     }
-    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CellToDo", for: indexPath) as UITableViewCell
             cell.textLabel?.text = tasks[indexPath.row]
@@ -31,8 +32,10 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
             success(true)
             completed.insert(tasks[indexPath.row], at: 0)
             tasks.remove(at: indexPath.row)
-            UserDefaults.standard.set(completed, forKey: "CompletedList")
-            UserDefaults.standard.set(tasks, forKey:"ToDoArray")
+            self.ref = Database.database().reference().child("AllTasks").child("task")
+            self.ref.setValue(tasks)
+            self.ref = Database.database().reference().child("CompletedTasks").child("task")
+            self.ref.setValue(completed)
 //            print(c.count)
             tableView.reloadData()
         })
@@ -46,7 +49,8 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
 //            print("Update action ...")
             success(true)
             tasks.remove(at: indexPath.row)
-            UserDefaults.standard.set(tasks, forKey:"ToDoArray")
+            self.ref = Database.database().reference().child("AllTasks").child("task")
+            self.ref.setValue(tasks)
             tableView.reloadData()
         })
 //        deleteAction.image = UIImage(named: "hammer")
@@ -58,20 +62,47 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         if !isRunOnce{
-            if UserDefaults.standard.value(forKey: "ToDoArray") != nil{
-                tasks = UserDefaults.standard.value(forKey: "ToDoArray") as! [String]
-            }
-            if UserDefaults.standard.value(forKey: "CompletedList") != nil{
-                completed = UserDefaults.standard.value(forKey: "CompletedList") as![String]
+            var i = 0
+            ref = Database.database().reference().child("AllTasks").child("task")
+            ref!.observeSingleEvent(of: .value){ (snapshot: DataSnapshot) in
+                for val in snapshot.children{
+                    let snapshotContent = val as? DataSnapshot
+                    let task = snapshotContent?.value as? String
+//                    print(task!)
+                    //                    print(i)
+                    tasks.insert(task!, at: i)
+                    i += 1
+                }
+                self.taskTableViewOutlet.reloadData()
+//                print(tasks.count)
+                i = 0
+                self.ref = Database.database().reference().child("CompletedTasks").child("task")
+                self.ref!.observeSingleEvent(of: .value){ (snapshot: DataSnapshot) in
+                    for val in snapshot.children{
+                        let snapshotContent = val as? DataSnapshot
+                        let task = snapshotContent?.value as? String
+//                        print(task!)
+                        //                    print(i)
+                        completed.insert(task!, at: i)
+                        i += 1
+                    }
+                }
             }
             isRunOnce = true
-        }
-        if text != ""{
-            tasks.insert(text, at: 0)
-            UserDefaults.standard.set(tasks, forKey:"ToDoArray")
+        }else{
+            if text != ""{
+                tasks.insert(text, at: 0)
+    //            UserDefaults.standard.set(tasks, forKey:"ToDoArray")
+                ref = Database.database().reference().child("AllTasks").child("task")
+                self.ref.setValue(tasks)
+            }
+            if isCompletedChange{
+                ref = Database.database().reference().child("CompletedTasks").child("task")
+                self.ref.setValue(completed)
+                isCompletedChange = false
+            }
         }
     }
 
 
 }
-
